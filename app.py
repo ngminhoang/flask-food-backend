@@ -1,8 +1,14 @@
+import os
+
+import requests
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
+from werkzeug.utils import secure_filename
 
 from repositories.Ingredient import Ingredient, db
+from services.DetectImageService import analyze_image
 from services.OptimizeService import scale
 
 app = Flask(__name__)
@@ -27,6 +33,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy with the app
 db.init_app(app)
+
+CORS(app, origins=["http://localhost:3000"])
+
 
 @app.route('/')
 def hello_world():
@@ -125,6 +134,40 @@ def get_data():
 def get_ingredients():
     ingredients = Ingredient.query.all()
     return jsonify([ingredient.to_dict() for ingredient in ingredients])
+
+@app.route('/api/analyze', methods=['POST'])
+def analyze():
+    # Get the API key
+    api_key = "4VQKUVUF.lEnStEKIxQVQLLYZEhc24kpiNaQTI3SA"
+
+    # Check if an image file is included in the request
+    if 'image' not in request.files:
+        return jsonify({"error": "No image provided"}), 400
+
+    # Get the image from the request
+    image = request.files['image']
+    filename = secure_filename(image.filename)
+
+    # Set up the temporary directory
+    tmp_dir = "/tmp"
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
+
+    image_path = os.path.join(tmp_dir, filename)
+    image.save(image_path)
+
+    # Call the analyze_image function
+    try:
+        result = analyze_image(api_key, image_path)
+        return jsonify(result)
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        # Optionally, remove the image after processing if not needed
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)  # Set debug=True for development
