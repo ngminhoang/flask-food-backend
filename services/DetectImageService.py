@@ -6,16 +6,46 @@ from flask_sqlalchemy import SQLAlchemy
 
 from models.FoodVisorResponse import AnalysisResponse, Position, Nutrition, FoodInfo, Food, Item
 
+# Initialize Flask and SQLAlchemy instances
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:5437/food-db'
 db = SQLAlchemy(app)
 
+# Ingredient model with a unique constraint on 'name' and the to_dict() method
+class Ingredient(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)  # Unique constraint for name
+    nu_grams = db.Column(db.Float)
+    nu_calories = db.Column(db.Float)
+    nu_proteins = db.Column(db.Float)
+    nu_carbs = db.Column(db.Float)
+    nu_fibers = db.Column(db.Float)
+    nu_fats = db.Column(db.Float)
+    nu_sat_fats = db.Column(db.Float)
+    nu_price = db.Column(db.Float)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'nu_grams': self.nu_grams,
+            'nu_calories': self.nu_calories,
+            'nu_proteins': self.nu_proteins,
+            'nu_carbs': self.nu_carbs,
+            'nu_fibers': self.nu_fibers,
+            'nu_fats': self.nu_fats,
+            'nu_sat_fats': self.nu_sat_fats,
+            'nu_price': self.nu_price
+        }
+
+# Parsing function that checks and adds ingredients if they don't exist in the database
 def parse_analysis_response(data: dict) -> AnalysisResponse:
     analysis_id = data.get('analysis_id', '')
     scopes = data.get('scopes', [])
     items = []
 
     for item_data in data.get('items', []):
+        # Process position information
         position_data = item_data.get('position', {})
         position = Position(
             x=position_data.get('x', 0),
@@ -24,8 +54,10 @@ def parse_analysis_response(data: dict) -> AnalysisResponse:
             height=position_data.get('height', 0)
         )
 
+        # Process food items
         food_list = []
         for food_data in item_data.get('food', []):
+            # Extract nutrition data
             nutrition_data = food_data.get('food_info', {}).get('nutrition', {})
             nutrition = Nutrition(
                 alcohol_100g=nutrition_data.get('alcohol_100g', 0),
@@ -40,9 +72,36 @@ def parse_analysis_response(data: dict) -> AnalysisResponse:
                 vitamin_c_100g=nutrition_data.get('vitamin_c_100g', 0)
             )
 
-            # <kiểm tra xem trong db ,trong bảng ingredient đã tồm tại hay chưa (không cần query vì trường name đã để là unique), nếu chưa tồn tại thì add vào db dựa theo class infradient (hãy hỗ trợ tôi mapping các trường dữ liệu phù hợp vào class )>
+            # Get the ingredient name
+            ingredient_name = food_data.get('ingredients', [])[0] if food_data.get('ingredients') else "Unknown"
+
+            # Use Flask app context for database operations
+            with app.app_context():
+                # Ensure ingredient_name is a string
+                if isinstance(ingredient_name, str):
+                    # Check if the ingredient exists
+                    existing_ingredient = Ingredient.query.filter_by(name=ingredient_name).first()
+
+                    # If the ingredient doesn't exist, add it
+                    if not existing_ingredient:
+                        new_ingredient = Ingredient(
+                            name=ingredient_name,
+                            nu_grams=100,  # Assuming grams per serving as default
+                            nu_calories=nutrition.calories_100g,
+                            nu_proteins=nutrition.proteins_100g,
+                            nu_carbs=nutrition.carbs_100g,
+                            nu_fibers=nutrition.fibers_100g,
+                            nu_fats=nutrition.fat_100g,
+                            nu_sat_fats=nutrition.fat_100g,  # Adjust based on actual sat_fat field if exists
+                            nu_price=None  # Replace with actual price if available
+                        )
+                        db.session.add(new_ingredient)
+                        db.session.commit()
+                    else:
+                        print(f"Ingredient '{ingredient_name}' already exists in the database.")
 
 
+            # Create the FoodInfo and Food objects
             food_info_data = food_data.get('food_info', {})
             food_info = FoodInfo(
                 food_id=food_info_data.get('food_id', ''),
@@ -52,8 +111,6 @@ def parse_analysis_response(data: dict) -> AnalysisResponse:
                 nutrition=nutrition
             )
 
-
-
             food = Food(
                 confidence=food_data.get('confidence', 0),
                 quantity=food_data.get('quantity', 0),
@@ -62,9 +119,11 @@ def parse_analysis_response(data: dict) -> AnalysisResponse:
             )
             food_list.append(food)
 
+        # Create the Item object
         item = Item(position=position, food=food_list)
         items.append(item)
 
+    # Return the fully parsed AnalysisResponse
     return AnalysisResponse(analysis_id=analysis_id, scopes=scopes, items=items)
 
 # Sử dụng hàm trong analyze_image
