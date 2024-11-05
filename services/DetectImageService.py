@@ -1,3 +1,4 @@
+from re import search
 from typing import List
 
 import requests
@@ -23,6 +24,7 @@ class Ingredient(db.Model):
     nu_fats = db.Column(db.Float)
     nu_sat_fats = db.Column(db.Float)
     nu_price = db.Column(db.Float)
+    search_status = db.Column(db.Integer)
 
     def to_dict(self):
         return {
@@ -35,7 +37,8 @@ class Ingredient(db.Model):
             'nu_fibers': self.nu_fibers,
             'nu_fats': self.nu_fats,
             'nu_sat_fats': self.nu_sat_fats,
-            'nu_price': self.nu_price
+            'nu_price': self.nu_price,
+            'search_status': self.search_status
         }
 
 # Parsing function that checks and adds ingredients if they don't exist in the database
@@ -59,7 +62,7 @@ def parse_analysis_response(data: dict) -> AnalysisResponse:
         for food_data in item_data.get('food', []):
             # Extract nutrition data
             nutrition_data = food_data.get('food_info', {}).get('nutrition', {})
-            nutrition = Nutrition(
+            total_nutrition = Nutrition(
                 alcohol_100g=nutrition_data.get('alcohol_100g', 0),
                 calcium_100g=nutrition_data.get('calcium_100g', 0),
                 calories_100g=nutrition_data.get('calories_100g', 0),
@@ -72,33 +75,50 @@ def parse_analysis_response(data: dict) -> AnalysisResponse:
                 vitamin_c_100g=nutrition_data.get('vitamin_c_100g', 0)
             )
 
-            # Get the ingredient name
-            ingredient_name = food_data.get('ingredients', [])[0] if food_data.get('ingredients') else "Unknown"
+            for ingredient_data in food_data.get('ingredients', []):
+                nutrition_data = ingredient_data.get('food_info', {}).get('nutrition', {})
+                nutrition = Nutrition(
+                    alcohol_100g=nutrition_data.get('alcohol_100g', 0),
+                    calcium_100g=nutrition_data.get('calcium_100g', 0),
+                    calories_100g=nutrition_data.get('calories_100g', 0),
+                    carbs_100g=nutrition_data.get('carbs_100g', 0),
+                    cholesterol_100g=nutrition_data.get('cholesterol_100g', 0),
+                    fat_100g=nutrition_data.get('fat_100g', 0),
+                    fibers_100g=nutrition_data.get('fibers_100g', 0),
+                    proteins_100g=nutrition_data.get('proteins_100g', 0),
+                    sugars_100g=nutrition_data.get('sugars_100g', 0),
+                    vitamin_c_100g=nutrition_data.get('vitamin_c_100g', 0)
+                )
 
-            # Use Flask app context for database operations
-            with app.app_context():
-                # Ensure ingredient_name is a string
-                if isinstance(ingredient_name, str):
-                    # Check if the ingredient exists
-                    existing_ingredient = Ingredient.query.filter_by(name=ingredient_name).first()
 
-                    # If the ingredient doesn't exist, add it
-                    if not existing_ingredient:
-                        new_ingredient = Ingredient(
-                            name=ingredient_name,
-                            nu_grams=100,  # Assuming grams per serving as default
-                            nu_calories=nutrition.calories_100g,
-                            nu_proteins=nutrition.proteins_100g,
-                            nu_carbs=nutrition.carbs_100g,
-                            nu_fibers=nutrition.fibers_100g,
-                            nu_fats=nutrition.fat_100g,
-                            nu_sat_fats=nutrition.fat_100g,  # Adjust based on actual sat_fat field if exists
-                            nu_price=None  # Replace with actual price if available
-                        )
-                        db.session.add(new_ingredient)
-                        db.session.commit()
-                    else:
-                        print(f"Ingredient '{ingredient_name}' already exists in the database.")
+                # Get the ingredient name
+                ingredient_name = ingredient_data.get('food_info', {}).get("display_name", "Unknown")
+
+                # Use Flask app context for database operations
+                with app.app_context():
+                    # Ensure ingredient_name is a string
+                    if isinstance(ingredient_name, str):
+                        # Check if the ingredient exists
+                        existing_ingredient = Ingredient.query.filter_by(name=ingredient_name).first()
+
+                        # If the ingredient doesn't exist, add it
+                        if not existing_ingredient:
+                            new_ingredient = Ingredient(
+                                name=ingredient_name,
+                                nu_grams=100,  # Assuming grams per serving as default
+                                nu_calories=nutrition.calories_100g,
+                                nu_proteins=nutrition.proteins_100g,
+                                nu_carbs=nutrition.carbs_100g,
+                                nu_fibers=nutrition.fibers_100g,
+                                nu_fats=nutrition.fat_100g,
+                                nu_sat_fats=nutrition.fat_100g,  # Adjust based on actual sat_fat field if exists
+                                nu_price=None,  # Replace with actual price if available
+                                search_status = 2
+                            )
+                            db.session.add(new_ingredient)
+                            db.session.commit()
+                        else:
+                            print(f"Ingredient '{ingredient_name}' already exists in the database.")
 
 
             # Create the FoodInfo and Food objects
@@ -108,7 +128,7 @@ def parse_analysis_response(data: dict) -> AnalysisResponse:
                 fv_grade=food_info_data.get('fv_grade', ''),
                 g_per_serving=food_info_data.get('g_per_serving', 0),
                 display_name=food_info_data.get('display_name', ''),
-                nutrition=nutrition
+                nutrition=total_nutrition
             )
 
             food = Food(
