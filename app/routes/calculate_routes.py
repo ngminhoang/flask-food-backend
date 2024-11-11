@@ -1,50 +1,9 @@
-import os
-
-import requests
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from flask_swagger_ui import get_swaggerui_blueprint
-from werkzeug.utils import secure_filename
-
-from repositories.Ingredient import Ingredient, db
-from services.DetectImageService import analyze_image
+from flask import Blueprint, jsonify, request
 from services.OptimizeService import scale
 
-app = Flask(__name__)
+calculate_bp = Blueprint('calculate', __name__)
 
-# Swagger UI configuration
-SWAGGER_URL = '/swagger'
-API_URL = '/api-docs'  # Point to your Swagger JSON or YAML
-
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'app_name': "Food API"
-    }
-)
-
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:5437/food-db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize SQLAlchemy with the app
-db.init_app(app)
-
-CORS(app, origins=["http://localhost:3000"])
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
-
-
-
-@app.route('/api/calculate_by_body', methods=['GET'])
+@calculate_bp.route('/api/calculate_by_body', methods=['GET'])
 def calculate_nutrition():
     # Lấy dữ liệu từ request, đảm bảo chuyển đổi đúng định dạng
     weight_kg = float(request.args.get('weight_kg', '0').replace(",", "."))
@@ -114,60 +73,3 @@ def calculate_nutrition():
 
     result = scale(TDEE, protein, fats, sat_fat, fiber, carbs)
     return jsonify(result)
-
-
-
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    # Retrieve query parameters
-    calo = float(request.args.get('calo', '0').replace(",", "."))
-    protein = float(request.args.get('protein', '0').replace(",", "."))
-    fat = float(request.args.get('fat', '0').replace(",", "."))
-    sat_fat = float(request.args.get('sat_fat', '0').replace(",", "."))
-    fiber = float(request.args.get('fiber', '0').replace(",", "."))
-    carb = float(request.args.get('carb', '0').replace(",", "."))
-
-    result = scale(calo, protein, fat, sat_fat, fiber, carb)
-    return jsonify(result)
-
-@app.route('/api/ingredients', methods=['GET'])
-def get_ingredients():
-    ingredients = Ingredient.query.all()
-    return jsonify([ingredient.to_dict() for ingredient in ingredients])
-
-@app.route('/api/analyze', methods=['POST'])
-def analyze():
-    # Get the API key
-    api_key = "4VQKUVUF.lEnStEKIxQVQLLYZEhc24kpiNaQTI3SA"
-
-    # Check if an image file is included in the request
-    if 'image' not in request.files:
-        return jsonify({"error": "No image provided"}), 400
-
-    # Get the image from the request
-    image = request.files['image']
-    filename = secure_filename(image.filename)
-
-    # Set up the temporary directory
-    tmp_dir = "/tmp"
-    if not os.path.exists(tmp_dir):
-        os.makedirs(tmp_dir)
-
-    image_path = os.path.join(tmp_dir, filename)
-    image.save(image_path)
-
-    # Call the analyze_image function
-    try:
-        result = analyze_image(api_key, image_path)
-        return jsonify(result)
-    except requests.exceptions.RequestException as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        # Optionally, remove the image after processing if not needed
-        if os.path.exists(image_path):
-            os.remove(image_path)
-
-
-
-if __name__ == '__main__':
-    app.run(debug=True)  # Set debug=True for development

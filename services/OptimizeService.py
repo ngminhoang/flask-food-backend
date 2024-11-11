@@ -145,8 +145,8 @@ def scale(calo, pro, fat, satfat, fiber, carb):
 
         # Print the result
         return model_results
-
-print(scale(660,32,40,36,0,48))
+#
+# print(scale(660,32,40,36,0,48))
 
 
 
