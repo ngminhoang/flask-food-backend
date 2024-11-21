@@ -1,15 +1,45 @@
+
+from pyomo.environ import *
+
+
+
+import os
+
 from flask import Flask
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from pyomo.common.tests.deps import pyo
 import pyomo.environ as pyo
-from pyomo.opt import SolverFactory
+from pyomo.opt import SolverFactory, ProblemFormat
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:5437/food-db'
 db = SQLAlchemy(app)
 
+
+if os.path.exists("temp_file.lp"):
+    print("File exists.")
+else:
+    print("File does not exist.")
 # Ensure Ingredient model has a to_dict() method
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False, unique=True)
+    type = db.Column(db.String, nullable=False)  # Example: Main, Second, Fever
+    ingredients = db.relationship('Ingredient', back_populates='category', lazy=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'type': self.type
+        }
 class Ingredient(db.Model):
+    __tablename__ = 'ingredients'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     nu_grams = db.Column(db.Float)
@@ -20,7 +50,9 @@ class Ingredient(db.Model):
     nu_fats = db.Column(db.Float)
     nu_sat_fats = db.Column(db.Float)
     nu_price = db.Column(db.Float)
-    # Add relevant fields here
+
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    category = db.relationship('Category', back_populates='ingredients')
 
     def to_dict(self):
         return {
@@ -33,39 +65,95 @@ class Ingredient(db.Model):
             'nu_fibers': self.nu_fibers,
             'nu_fats': self.nu_fats,
             'nu_sat_fats': self.nu_sat_fats,
-            'nu_price': self.nu_price
+            'nu_price': self.nu_price,
+            'category': self.category.to_dict() if self.category else None
         }
+
 
 def scale(calo, pro, fat, satfat, fiber, carb):
 
     with app.app_context():
-        ingredients = Ingredient.query.all()
+        ingredients = (
+            db.session.query(
+                Ingredient.id,
+                Ingredient.name,
+                Ingredient.nu_grams,
+                Ingredient.nu_calories,
+                Ingredient.nu_proteins,
+                Ingredient.nu_fats,
+                Ingredient.nu_sat_fats,
+                Ingredient.nu_fibers,
+                Ingredient.nu_carbs,
+                Ingredient.nu_price,
+                Category.type.label("type")
+            )
+            .join(Category, Ingredient.category_id == Category.id)
+            .filter(
+                Ingredient.nu_price != 0,
+                Ingredient.nu_price.isnot(None)  # Ensure price is not None
+            )
+            .all()
+        )
 
-        # Convert ingredient objects into a list of dictionaries
-        ingredient_data = [ingredient.to_dict() for ingredient in ingredients]
+        # Convert query results into a list of dictionaries
+        ingredient_data = [
+            {
+                "id": item.id,
+                "name": item.name,
+                "nu_grams": item.nu_grams,
+                "nu_calories": item.nu_calories,
+                "nu_proteins": item.nu_proteins,
+                "nu_fats": item.nu_fats,
+                "nu_sat_fats": item.nu_sat_fats,
+                "nu_fibers": item.nu_fibers,
+                "nu_carbs": item.nu_carbs,
+                "nu_price": item.nu_price,
+                "type": item.type
+            }
+            for item in ingredients
+        ]
 
-        # Debug print to see the queried ingredients
-        # print("Queried Ingredients:", ingredient_data)
-
-
+        # Transform the data for further processing
         raw_data = [
-            [item['name'], item['nu_grams'], item['nu_calories'], item['nu_proteins'], item['nu_fats'], item['nu_sat_fats'], item['nu_fibers'], item['nu_carbs'], item['nu_price'],item['id']]
+            [
+                item["name"],
+                item["nu_grams"],
+                item["nu_calories"],
+                item["nu_proteins"],
+                item["nu_fats"],
+                item["nu_sat_fats"],
+                item["nu_fibers"],
+                item["nu_carbs"],
+                item["nu_price"],
+                item["id"],
+                item["type"]
+            ]
             for item in ingredient_data
         ]
 
-        # Output the transformed data
-        # for row in raw_data:
-        #     print(row)
+        # Create a DataFrame with the additional 'Type' column
+        data = pd.DataFrame(
+            raw_data,
+            columns=["Food", "Grams", "Calories", "Protein", "Fat", "Sat.Fat", "Fiber", "Carbs", "Cost", "id", "Type"]
+        )
 
-        data = pd.DataFrame(raw_data, columns=["Food", "Grams", "Calories", "Protein", "Fat", "Sat.Fat", "Fiber", "Carbs", "Cost","id"])
+        # Debug print to check the DataFrame
+        # print(data.head())
 
-        # Tách label và các thông số
-        data0 = data.iloc[:, 2:8].values  # Dinh dưỡng từ Calories đến Carbs
-        data1 = data.iloc[:, 9].values     # Tên thực phẩm
-        data2 = data.iloc[:, 1].values     # Trọng lượng thực phẩm
-        prices = data.iloc[:, 8].values     # Cột giá
-        number = len(data0)  # Số lượng thực phẩm
+        # Extract columns for your calculations
+        data0 = data.iloc[:, 2:8].values  # Nutrition data from Calories to Carbs
+        data1 = data.iloc[:, 9].values   # IDs
+        data2 = data.iloc[:, 1].values   # Food weights
+        prices = data.iloc[:, 8].values  # Cost column
+        types = data.iloc[:, 10].values  # Category types
 
+        number = len(data0)  # Total number of ingredients
+
+        # Example constraint handling (replace with your specific logic)
+        # Ensure SNACK can replace SECOND in any relevant calculations
+        # Adjust the constraints to include MAIN, SECOND, SNACK, and FEVER as needed
+
+        print(data)
         # Chuyển đổi dữ liệu sang dạng dictionary
         b = {}
         for i in range(number):
@@ -100,9 +188,33 @@ def scale(calo, pro, fat, satfat, fiber, carb):
         model.Const12 = pyo.Constraint(rule=lambda model: sum(model.p[i, 5] * model.x[i] for i in model.i) <= fiber + 20)
         model.Const13 = pyo.Constraint(rule=lambda model: sum(model.p[i, 6] * model.x[i] for i in model.i) <= carb + 20)
 
+        #ràng buộc khối lượng
+        # Chia dữ liệu dựa trên loại thực phẩm
+        main_indices = [i + 1 for i, t in enumerate(types) if t == "MAIN"]
+        second_snack_indices = [i + 1 for i, t in enumerate(types) if t in ["SECOND", "SNACK"]]
+        other_indices = [i + 1 for i, t in enumerate(types) if t == "FEVER"]
 
+        # Thêm các tập hợp vào model
+        model.Main = pyo.Set(initialize=main_indices)
+        model.Second = pyo.Set(initialize=second_snack_indices)
+        model.Other = pyo.Set(initialize=other_indices)
 
-        # Giải bài toán
+        # Tổng trọng lượng cuối cùng
+        model.total_weight = pyo.Expression(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.i))
+
+        # Ràng buộc tỷ lệ Main (50% - 70%)
+        model.RatioMainLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Main) >= 0.50 * model.total_weight)
+        model.RatioMainUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Main) <= 0.70 * model.total_weight)
+
+        # Ràng buộc tỷ lệ Second hoặc Snack (25% - 35%)
+        model.RatioSecondLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Second) >= 0.25 * model.total_weight)
+        model.RatioSecondUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Second) <= 0.35 * model.total_weight)
+
+        # Ràng buộc tỷ lệ Other (5% - 15%)
+        model.RatioOtherLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Other) >= 0.05 * model.total_weight)
+        model.RatioOtherUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Other) <= 0.15 * model.total_weight)
+
+# Giải bài toán
         optm = SolverFactory('glpk')
         results = optm.solve(model)
 
@@ -146,7 +258,7 @@ def scale(calo, pro, fat, satfat, fiber, carb):
         # Print the result
         return model_results
 #
-# print(scale(660,32,40,36,0,48))
+print(scale(660,32,40,36,0,48))
 
 
 
