@@ -7,5 +7,5 @@ class Config:
     SWAGGER_URL = '/swagger'
     API_URL = '/api-docs'
     # Configurations for image analysis
-    API_KEY = "4VQKUVUF.lEnStEKIxQVQLLYZEhc24kpiNaQTI3SA"
+    API_KEY = "kxRvwbnx.wj5LjxxtnVyjvm2CByuMiuKUdkbqKZqf"
     TMP_DIR = "/tmp"

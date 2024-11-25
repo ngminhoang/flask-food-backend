@@ -24,7 +24,7 @@ else:
 # Ensure Ingredient model has a to_dict() method
 
 class Category(db.Model):
-    __tablename__ = 'categories'
+    __tablename__ = 'category'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
@@ -37,8 +37,9 @@ class Category(db.Model):
             'name': self.name,
             'type': self.type
         }
+
 class Ingredient(db.Model):
-    __tablename__ = 'ingredients'
+    __tablename__ = 'ingredient'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -51,7 +52,8 @@ class Ingredient(db.Model):
     nu_sat_fats = db.Column(db.Float)
     nu_price = db.Column(db.Float)
 
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    # Corrected ForeignKey reference
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     category = db.relationship('Category', back_populates='ingredients')
 
     def to_dict(self):
@@ -68,6 +70,7 @@ class Ingredient(db.Model):
             'nu_price': self.nu_price,
             'category': self.category.to_dict() if self.category else None
         }
+
 
 
 def scale(calo, pro, fat, satfat, fiber, carb):
@@ -94,6 +97,8 @@ def scale(calo, pro, fat, satfat, fiber, carb):
             )
             .all()
         )
+
+
 
         # Convert query results into a list of dictionaries
         ingredient_data = [
@@ -134,9 +139,13 @@ def scale(calo, pro, fat, satfat, fiber, carb):
         # Create a DataFrame with the additional 'Type' column
         data = pd.DataFrame(
             raw_data,
-            columns=["Food", "Grams", "Calories", "Protein", "Fat", "Sat.Fat", "Fiber", "Carbs", "Cost", "id", "Type"]
+            columns=["Name", "Grams", "Calories", "Protein", "Fat", "Sat.Fat", "Fiber", "Carbs", "Cost", "id", "Type"]
         )
 
+        # for index, row in data.iterrows():
+        #     print("Row Index:", index)
+        #     print("Food:", row["Name"])
+        #     print("Calories:", row["Calories"])
         # Debug print to check the DataFrame
         # print(data.head())
 
@@ -153,7 +162,6 @@ def scale(calo, pro, fat, satfat, fiber, carb):
         # Ensure SNACK can replace SECOND in any relevant calculations
         # Adjust the constraints to include MAIN, SECOND, SNACK, and FEVER as needed
 
-        print(data)
         # Chuyển đổi dữ liệu sang dạng dictionary
         b = {}
         for i in range(number):
@@ -173,20 +181,20 @@ def scale(calo, pro, fat, satfat, fiber, carb):
         model.Obj = pyo.Objective(rule=lambda model: sum(model.price[i] * model.x[i] for i in model.i), sense=pyo.minimize)
 
         # Ràng buộc dinh dưỡng
-        model.Const2 = pyo.Constraint(rule=lambda model: sum(model.p[i, 1] * model.x[i] for i in model.i) >= calo - 70)
-        model.Const3 = pyo.Constraint(rule=lambda model: sum(model.p[i, 2] * model.x[i] for i in model.i) >= pro - 20)
-        model.Const4 = pyo.Constraint(rule=lambda model: sum(model.p[i, 3] * model.x[i] for i in model.i) >= fat - 20)
-        model.Const5 = pyo.Constraint(rule=lambda model: sum(model.p[i, 4] * model.x[i] for i in model.i) >= satfat - 20)
-        model.Const6 = pyo.Constraint(rule=lambda model: sum(model.p[i, 5] * model.x[i] for i in model.i) >= fiber - 20)
-        model.Const7 = pyo.Constraint(rule=lambda model: sum(model.p[i, 6] * model.x[i] for i in model.i) >= carb - 20)
+        model.Const2 = pyo.Constraint(rule=lambda model: sum(model.p[i, 1] * model.x[i] for i in model.i) >= calo - 10)
+        model.Const3 = pyo.Constraint(rule=lambda model: sum(model.p[i, 2] * model.x[i] for i in model.i) >= pro - 3)
+        model.Const4 = pyo.Constraint(rule=lambda model: sum(model.p[i, 3] * model.x[i] for i in model.i) >= fat - 2)
+        model.Const5 = pyo.Constraint(rule=lambda model: sum(model.p[i, 4] * model.x[i] for i in model.i) >= satfat - 2)
+        model.Const6 = pyo.Constraint(rule=lambda model: sum(model.p[i, 5] * model.x[i] for i in model.i) >= fiber - 3)
+        model.Const7 = pyo.Constraint(rule=lambda model: sum(model.p[i, 6] * model.x[i] for i in model.i) >= carb - 3)
 
         # Ràng buộc tối đa
-        model.Const8 = pyo.Constraint(rule=lambda model: sum(model.p[i, 1] * model.x[i] for i in model.i) <= calo + 70)
-        model.Const9 = pyo.Constraint(rule=lambda model: sum(model.p[i, 2] * model.x[i] for i in model.i) <= pro + 20)
-        model.Const10 = pyo.Constraint(rule=lambda model: sum(model.p[i, 3] * model.x[i] for i in model.i) <= fat + 20)
-        model.Const11 = pyo.Constraint(rule=lambda model: sum(model.p[i, 4] * model.x[i] for i in model.i) <= satfat + 20)
-        model.Const12 = pyo.Constraint(rule=lambda model: sum(model.p[i, 5] * model.x[i] for i in model.i) <= fiber + 20)
-        model.Const13 = pyo.Constraint(rule=lambda model: sum(model.p[i, 6] * model.x[i] for i in model.i) <= carb + 20)
+        model.Const8 = pyo.Constraint(rule=lambda model: sum(model.p[i, 1] * model.x[i] for i in model.i) <= calo + 10)
+        model.Const9 = pyo.Constraint(rule=lambda model: sum(model.p[i, 2] * model.x[i] for i in model.i) <= pro + 3)
+        model.Const10 = pyo.Constraint(rule=lambda model: sum(model.p[i, 3] * model.x[i] for i in model.i) <= fat + 2)
+        model.Const11 = pyo.Constraint(rule=lambda model: sum(model.p[i, 4] * model.x[i] for i in model.i) <= satfat + 2)
+        model.Const12 = pyo.Constraint(rule=lambda model: sum(model.p[i, 5] * model.x[i] for i in model.i) <= fiber + 3)
+        model.Const13 = pyo.Constraint(rule=lambda model: sum(model.p[i, 6] * model.x[i] for i in model.i) <= carb + 3)
 
         #ràng buộc khối lượng
         # Chia dữ liệu dựa trên loại thực phẩm
@@ -203,16 +211,16 @@ def scale(calo, pro, fat, satfat, fiber, carb):
         model.total_weight = pyo.Expression(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.i))
 
         # Ràng buộc tỷ lệ Main (50% - 70%)
-        model.RatioMainLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Main) >= 0.50 * model.total_weight)
+        model.RatioMainLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Main) >= 0.60 * model.total_weight)
         model.RatioMainUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Main) <= 0.70 * model.total_weight)
 
         # Ràng buộc tỷ lệ Second hoặc Snack (25% - 35%)
-        model.RatioSecondLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Second) >= 0.25 * model.total_weight)
-        model.RatioSecondUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Second) <= 0.35 * model.total_weight)
+        model.RatioSecondLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Second) >= 0.20 * model.total_weight)
+        model.RatioSecondUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Second) <= 0.25 * model.total_weight)
 
         # Ràng buộc tỷ lệ Other (5% - 15%)
         model.RatioOtherLower = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Other) >= 0.05 * model.total_weight)
-        model.RatioOtherUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Other) <= 0.15 * model.total_weight)
+        model.RatioOtherUpper = pyo.Constraint(rule=lambda model: sum(data2[i - 1] * model.x[i] for i in model.Other) <= 0.10 * model.total_weight)
 
 # Giải bài toán
         optm = SolverFactory('glpk')

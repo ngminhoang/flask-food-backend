@@ -7,9 +7,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:
 db = SQLAlchemy(app)
 
 # Ingredient model
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)  # Ensure unique category names
+    ingredients = db.relationship('Ingredient', back_populates='category', lazy=True)
+
 class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)  # Unique constraint for name
+    name = db.Column(db.String, unique=True, nullable=False)
     nu_grams = db.Column(db.Float)
     nu_calories = db.Column(db.Float)
     nu_proteins = db.Column(db.Float)
@@ -20,48 +25,66 @@ class Ingredient(db.Model):
     nu_price = db.Column(db.Float)
     search_status = db.Column(db.Integer)
 
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category = db.relationship('Category', back_populates='ingredients')
+
+
 def add_to_db(file_path):
-    # Read CSV file into a pandas DataFrame (without headers)
+    # Read CSV file into a pandas DataFrame
     data = pd.read_csv(file_path, header=None)
 
-    # Iterate over rows in the DataFrame
+    # Extract and process unique categories from field10
+    categories = set(data[10].str.split(',').explode().str.strip().unique())
+
+    # Add categories to the database
+    category_map = {}
+    for category_name in categories:
+        if category_name:  # Avoid empty strings
+            category = Category(name=category_name)
+            db.session.add(category)
+            category_map[category_name] = category
+    db.session.commit()
+
+    # Iterate over rows in the DataFrame to add ingredients
     for _, row in data.iterrows():
         try:
-            # Split the single column (row[0]) by commas to extract fields
-            field0 = row[0].split(',')
-            field1 = row[1].split(',')
-            field2 = row[2].split(',')
-            field3 = row[3].split(',')
-            field4 = row[4].split(',')
-            field5 = row[5].split(',')
-            field6 = row[6].split(',')
-            field7 = row[7].split(',')
-            field8 = row[8].split(',')
-            field9 = row[9].split(',')
-            # Map the fields to the database columns
+            # Extract fields from the row
+            name = row[0].strip()
+            nu_grams = float(row[2])
+            nu_calories = float(row[3])
+            nu_proteins = float(row[4])
+            nu_fats = float(row[5])
+            nu_sat_fats = float(row[6])
+            nu_fibers = float(row[7])
+            nu_carbs = float(row[8])
+            nu_price = float(row[9])
+            category_names = row[10].split(',')  # List of categories for the ingredient
+
+            # Associate with the first category (assuming one category per ingredient)
+            category = category_map.get(category_names[0].strip())
+
+            # Create and add the ingredient
             ingredient = Ingredient(
-                name=field0[0],  # First field is 'Food'
-                nu_grams=float(field2[0]),  # Third field is 'Grams'
-                nu_calories=float(field3[0]),  # Fourth field is 'Calories'
-                nu_proteins=float(field4[0]),  # Fifth field is 'Protein'
-                nu_carbs=float(field8[0]),  # Ninth field is 'Carbs'
-                nu_fibers=float(field7[0]),  # Eighth field is 'Fiber'
-                nu_fats=float(field5[0]),  # Sixth field is 'Fat'
-                nu_sat_fats=float(field6[0]),  # Seventh field is 'Sat.Fat'
-                nu_price=0,  # Default price
-                search_status=2  # Default status
+                name=name,
+                nu_grams=nu_grams,
+                nu_calories=nu_calories,
+                nu_proteins=nu_proteins,
+                nu_fats=nu_fats,
+                nu_sat_fats=nu_sat_fats,
+                nu_fibers=nu_fibers,
+                nu_carbs=nu_carbs,
+                nu_price=nu_price,
+                search_status=2,  # Default status
+                category=category
             )
-
-            # Debug print
-            print(f"Adding {field0[0]} with grams: {field2[0]} and calories: {field3[0]}")
-
-            # Uncomment to insert into the database
             db.session.add(ingredient)
             db.session.commit()
+            print(f"Added ingredient: {name}")
 
         except Exception as e:
             db.session.rollback()
             print(f"Error adding {row[0]}: {e}")
+
 
 if __name__ == "__main__":
     with app.app_context():
