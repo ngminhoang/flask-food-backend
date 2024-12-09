@@ -23,89 +23,84 @@ Cheddar,1-in. cube,17,70,4,6,5,0,0,0.3,Dairy products
 "Cheddar, grated cup",1/2 cup,56,226,14,19,17,0,1,1,Dairy products
 Cream cheese,1 oz.,28,105,2,11,10,0,1,0.2,Dairy products
 Processed cheese,1 oz.,28,105,7,9,8,0,0,0.3,Dairy products
-Roquefort type,1 oz.,28,105,6,9,8,0,0,1,Dairy products
-Swiss,1 oz.,28,105,7,8,7,0,0,1,Dairy products
-Eggs raw,2,100,150,12,12,10,0,0,1,Dairy products
-Eggs Scrambled or fried,2,128,220,13,16,14,0,1,1,Dairy products
+Roquefort type,1 oz.,28,105,6,9,8,0,0,4,Dairy products
+Swiss,1 oz.,28,105,7,8,7,0,0,0.5,Dairy products
+Eggs raw,2,100,150,12,12,10,0,0,0.5,Dairy products
+Eggs Scrambled or fried,2,128,220,13,16,14,0,1,1.2,Dairy products
 Yolks,2,34,120,6,10,8,0,0,1,"Fats, Oils, Shortenings"
-Butter,1T.,14,100,0,11,10,0,0,1,"Fats, Oils, Shortenings"
-Butter,1/2 cup,112,113,114,115,116,117,118,1,"Fats, Oils, Shortenings"
-Butter,1/4 lb.,112,113,114,115,116,117,118,1,"Fats, Oils, Shortenings"
-Hydrogenated cooking fat,1/2 cup,100,665,0,100,88,0,0,1,"Fats, Oils, Shortenings"
-Lard,1/2 cup,110,992,0,110,92,0,0,1,"Fats, Oils, Shortenings"
+Butter,1T.,14,100,0,11,10,0,0,0.01,"Fats, Oils, Shortenings"
+Hydrogenated cooking fat,1/2 cup,100,665,0,100,88,0,0,3,"Fats, Oils, Shortenings"
+Lard,1/2 cup,110,992,0,110,92,0,0,0.8,"Fats, Oils, Shortenings"
 Margarine,1/2 cup,112,806,0,91,76,0,0,1,"Fats, Oils, Shortenings"
-"Margarine, 2 pat or",1 T.,14,100,0,11,9,0,0,1,"Fats, Oils, Shortenings"
-Mayonnaise,1 T.,15,110,0,12,5,0,0,1,"Fats, Oils, Shortenings"
-Corn oil,1 T.,14,125,0,14,5,0,0,1,"Fats, Oils, Shortenings"
-Olive oil,1T.,14,125,0,14,3,0,0,1,"Fats, Oils, Shortenings"
-Safflower seed oil,1 T.,14,125,0,14,3,0,0,1,"Fats, Oils, Shortenings"
-French dressing,1 T.,15,60,0,6,2,0,2,1,"Fats, Oils, Shortenings"
-Thousand Island sauce,1 T.,15,75,0,8,3,0,1,1,"Fats, Oils, Shortenings"
+Mayonnaise,1 T.,15,110,0,12,5,0,0,0.1,"Fats, Oils, Shortenings"
+Corn oil,1 T.,14,125,0,14,5,0,0,0.08,"Fats, Oils, Shortenings"
+Olive oil,1T.,14,125,0,14,3,0,0,0.03,"Fats, Oils, Shortenings"
+Safflower seed oil,1 T.,14,125,0,14,3,0,0,0.3,"Fats, Oils, Shortenings"
+French dressing,1 T.,15,60,0,6,2,0,2,0.15,"Fats, Oils, Shortenings"
+Thousand Island sauce,1 T.,15,75,0,8,3,0,1,0.15,"Fats, Oils, Shortenings"
 Salt pork,2 oz.,60,470,3,55,0,0,0,1,"Meat, Poultry"
-Bacon,2 slices,16,95,4,8,7,0,1,1,"Meat, Poultry"
-Beef,3 oz.,85,245,23,16,15,0,0,1,"Meat, Poultry"
-Hamburger,3 oz.,85,245,21,17,15,0,0,1,"Meat, Poultry"
+Bacon,2 slices,16,95,4,8,7,0,1,0.34,"Meat, Poultry"
+Beef,3 oz.,85,245,23,16,15,0,0,1.87,"Meat, Poultry"
+Hamburger,3 oz.,85,245,21,17,15,0,0,3,"Meat, Poultry"
 Ground lean,3 oz.,85,185,24,10,9,0,0,1,"Meat, Poultry"
-Roast beef,3 oz.,85,390,16,36,35,0,0,1,"Meat, Poultry"
-Steak,3 oz.,85,330,20,27,25,0,0,1,"Meat, Poultry"
-"Steak, lean, as round",3 oz.,85,220,24,12,11,0,0,1,"Meat, Poultry"
-Corned beef,3 oz.,85,185,22,10,9,0,0,1,"Meat, Poultry"
-Corned beef hash canned,3 oz.,85,120,12,8,7,0,6,1,"Meat, Poultry"
-Corned beef hash Dried,2 oz.,56,115,19,4,4,0,0,1,"Meat, Poultry"
-Pot-pie,1 pie,227,480,18,28,25,0,32,1,"Meat, Poultry"
-Corned beef hash Stew,1 cup,235,185,15,10,9,0,15,1,"Meat, Poultry"
+Roast beef,3 oz.,85,390,16,36,35,0,0,2,"Meat, Poultry"
+Steak,3 oz.,85,330,20,27,25,0,0,2.24,"Meat, Poultry"
+"Steak, lean, as round",3 oz.,85,220,24,12,11,0,0,1.5,"Meat, Poultry"
+Corned beef,3 oz.,85,185,22,10,9,0,0,1.68,"Meat, Poultry"
+Corned beef hash canned,3 oz.,85,120,12,8,7,0,6,0.75,"Meat, Poultry"
+Corned beef hash Dried,2 oz.,56,115,19,4,4,0,0,1.48,"Meat, Poultry"
+Pot-pie,1 pie,227,480,18,28,25,0,32,3,"Meat, Poultry"
+Corned beef hash Stew,1 cup,235,185,15,10,9,0,15,4,"Meat, Poultry"
 chicken,3 oz.,85,185,23,9,7,0,0,1,"Meat, Poultry"
 "Fried, breast or leg and thigh chicken",3 oz.,85,245,25,15,11,0,0,1,"Meat, Poultry"
-Roasted chicken,3 1/2 oz.,100,290,25,20,16,0,0,1,"Meat, Poultry"
-"Chicken livers, fried",3 med.,100,140,22,14,12,0,2.3,1,"Meat, Poultry"
-"Duck, domestic",3 1/2 oz.,100,370,16,28,0,0,0,1,"Meat, Poultry"
-"Lamb, chop, broiled",4 oz.,115,480,24,35,33,0,0,1,"Meat, Poultry"
-Leg roasted,3 oz.,86,314,20,14,14,0,0,1,"Meat, Poultry"
-"Shoulder, braised",3 oz.,85,285,18,23,21,0,0,1,"Meat, Poultry"
-"Pork, chop, 1 thick",3 1/2 oz.,100,260,16,21,18,0,0,1,"Meat, Poultry"
-Ham pan-broiled,3 oz.,85,290,16,22,19,0,0,1,"Meat, Poultry"
-"Ham, as ",2 oz.,57,170,13,13,11,0,0,1,"Meat, Poultry"
+Roasted chicken,3 1/2 oz.,100,290,25,20,16,0,0,1.54,"Meat, Poultry"
+"Chicken livers, fried",3 med.,100,140,22,14,12,0,2.3,1.32,"Meat, Poultry"
+"Duck, domestic",3 1/2 oz.,100,370,16,28,0,0,0,2.64,"Meat, Poultry"
+"Lamb, chop, broiled",4 oz.,115,480,24,35,33,0,03.81,"Meat, Poultry"
+Leg roasted,3 oz.,86,314,20,14,14,0,0,3.3,"Meat, Poultry"
+"Shoulder, braised",3 oz.,85,285,18,23,21,0,0,2.81,"Meat, Poultry"
+"Pork, chop, 1 thick",3 1/2 oz.,100,260,16,21,18,0,0,1.32,"Meat, Poultry"
+Ham pan-broiled,3 oz.,85,290,16,22,19,0,0,1.12,"Meat, Poultry"
 "Ham, canned, spiced",2 oz.,57,165,8,14,12,0,1,1,"Meat, Poultry"
-Pork roast,3 oz.,85,310,21,24,21,0,0,1,"Meat, Poultry"
-Pork sausage,3 1/2 oz.,100,475,18,44,40,0,0,1,"Meat, Poultry"
-Turkey,3 1/2 oz.,100,265,27,15,0,0,0,1,"Meat, Poultry"
-Veal,3 oz.,85,185,23,9,8,0,0,1,"Meat, Poultry"
-Roast,3 oz.,85,305,13,14,13,0,0,1,"Meat, Poultry"
-Clams,3 oz.,85,87,12,1,0,0,2,1,"Fish, Seafood"
-Cod,3 1/2 oz.,100,170,28,5,0,0,0,1,"Fish, Seafood"
-Crab meat,3 oz.,85,90,14,2,0,0,1,1,"Fish, Seafood"
-Fish sticks fried,5,112,200,19,10,5,0,8,1,"Fish, Seafood"
-Flounder,3 1/2 oz.,100,200,30,8,0,0,0,1,"Fish, Seafood"
-Haddock,3 oz.,85,135,16,5,4,0,6,1,"Fish, Seafood"
-Halibut,3 1/2 oz.,100,182,26,8,0,0,0,1,"Fish, Seafood"
-Herring,1 small,100,211,22,13,0,0,0,1,"Fish, Seafood"
-Lobster,aver.,100,92,18,1,0,0,0,1,"Fish, Seafood"
-Mackerel,3 oz.,85,155,18,9,0,0,0,1,"Fish, Seafood"
-Oysters,6-8 med.,230,231,232,233,234,235,236,1,"Fish, Seafood"
-Oyster stew,1 cup,85,125,19,6,1,0,0,1,"Fish, Seafood"
-Salmon,3 oz.,85,120,17,5,1,0,0,1,"Fish, Seafood"
-Sardines,3 oz.,85,180,22,9,4,0,0,1,"Fish, Seafood"
-Scallops,3 1/2 oz.,100,104,18,8,0,0,10,1,"Fish, Seafood"
-Shad,3 oz.,85,170,20,10,0,0,0,1,"Fish, Seafood"
-Shrimp,3 oz.,85,110,23,1,0,0,0,1,"Fish, Seafood"
-Swordfish,1 steak,100,180,27,6,0,0,0,1,"Fish, Seafood"
-Tuna,3 oz.,85,170,25,7,3,0,0,1,"Fish, Seafood"
-Artichoke,1 large,100,44,2,0,0,2,10,1,Vegetables A-E
-Asparagus,6 spears,96,18,1,0,0,0.5,3,1,Vegetables A-E
-Beans,1 cup,125,25,1,0,0,0.8,6,1,Vegetables A-E
-Lima,1 cup,160,140,8,0,0,3,24,1,Vegetables A-E
-"Lima, dry, cooked",1 cup,192,260,16,0,0,2,48,1,Vegetables A-E
-"Navy, baked with pork",3/4 cup,200,250,11,6,6,2,37,1,Vegetables A-E
-Red kidney,1 cup,260,230,15,1,0,2.5,42,1,Vegetables A-E
-Bean sprouts,1 cup,50,17,1,0,0,0.3,3,1,Vegetables A-E
-Beet greens,1 cup,100,27,2,0,0,1.4,6,1,Vegetables A-E
-Beetroots,1 cup,165,1,12,0,0,0,0.8,1,Vegetables A-E
-Broccoli,1 cup,150,45,5,0,0,1.9,8,1,Vegetables A-E
-Brussels sprouts,1 cup,130,60,6,0,0,1.7,12,1,Vegetables A-E
-Sauerkraut,1 cup,150,32,1,0,0,1.2,7,1,Vegetables A-E
-Steamed cabbage,1 cup,170,40,2,0,0,1.3,9,1,Vegetables A-E
-Carrots,1 cup,150,45,1,0,0,0.9,10,1,Vegetables A-E
-"Raw, grated",1 cup,110,45,1,0,0,1.2,10,1,Vegetables A-E
+Pork roast,3 oz.,85,310,21,24,21,0,0,1.12,"Meat, Poultry"
+Pork sausage,3 1/2 oz.,100,475,18,44,40,0,0,1.32,"Meat, Poultry"
+Turkey,3 1/2 oz.,100,265,27,15,0,0,0,1.1,"Meat, Poultry"
+Veal,3 oz.,85,185,23,9,8,0,0,3.96,"Meat, Poultry"
+Roast,3 oz.,85,305,13,14,13,0,0,3.74,"Meat, Poultry"
+Clams,3 oz.,85,87,12,1,0,0,2,1.3,"Fish, Seafood"
+Cod,3 1/2 oz.,100,170,28,5,0,0,0,1.76,"Fish, Seafood"
+Crab meat,3 oz.,85,90,14,2,0,0,1,3.74,"Fish, Seafood"
+Fish sticks fried,5,112,200,19,10,5,0,8,1.48,"Fish, Seafood"
+Flounder,3 1/2 oz.,100,200,30,8,0,0,0,2.2,"Fish, Seafood"
+Haddock,3 oz.,85,135,16,5,4,0,6,1.87,"Fish, Seafood"
+Halibut,3 1/2 oz.,100,182,26,8,0,0,0,4.4,"Fish, Seafood"
+Herring,1 small,100,211,22,13,0,0,0,1.76,"Fish, Seafood"
+Lobster,aver.,100,92,18,1,0,0,0,4.4,"Fish, Seafood"
+Mackerel,3 oz.,85,155,18,9,0,0,0,1.12,"Fish, Seafood"
+Oysters,6-8 med.,230,231,232,233,234,235,236,10,"Fish, Seafood"
+Oyster stew,1 cup,85,125,19,6,1,0,0,1.5,"Fish, Seafood"
+Salmon,3 oz.,85,120,17,5,1,0,0,2.81,"Fish, Seafood"
+Sardines,3 oz.,85,180,22,9,4,0,0,1.42,"Fish, Seafood"
+Scallops,3 1/2 oz.,100,104,18,8,0,0,10,4.4,"Fish, Seafood"
+Shad,3 oz.,85,170,20,10,0,0,0,1.31,"Fish, Seafood"
+Shrimp,3 oz.,85,110,23,1,0,0,0,2.24,"Fish, Seafood"
+Swordfish,1 steak,100,180,27,6,0,0,0,4.4,"Fish, Seafood"
+Tuna,3 oz.,85,170,25,7,3,0,0,4.68,"Fish, Seafood"
+Artichoke,1 large,100,44,2,0,0,2,10,0.88,Vegetables A-E
+Asparagus,6 spears,96,18,1,0,0,0.5,3,0.84,Vegetables A-E
+Beans,1 cup,125,25,1,0,0,0.8,6,0.84,Vegetables A-E
+Lima,1 cup,160,140,8,0,0,3,24,1.4,Vegetables A-E
+"Navy, baked with pork",3/4 cup,200,250,11,6,6,2,37,0.94,Vegetables A-E
+Red kidney,1 cup,260,230,15,1,0,2.5,42,0.86,Vegetables A-E
+Bean sprouts,1 cup,50,17,1,0,0,0.3,3,0.33,Vegetables A-E
+Beet greens,1 cup,100,27,2,0,0,1.4,6,1.2,Vegetables A-E
+Beetroots,1 cup,165,1,12,0,0,0,0.8,0.9,Vegetables A-E
+Broccoli,1 cup,150,45,5,0,0,1.9,8,0.83,Vegetables A-E
+Brussels sprouts,1 cup,130,60,6,0,0,1.7,12,1.16,Vegetables A-E
+Sauerkraut,1 cup,150,32,1,0,0,1.2,7,0.74,Vegetables A-E
+Steamed cabbage,1 cup,170,40,2,0,0,1.3,9,1.32,Vegetables A-E
+Carrots,1 cup,150,45,1,0,0,0.9,10,0.5,Vegetables A-E
+"Raw, grated",1 cup,110,45,1,0,0,1.2,10,0.48,Vegetables A-E
 "Strips, from raw",1 mad.,50,20,0,0,0,0.5,5,1,Vegetables A-E
 Cauliflower,1 cup,120,30,3,0,0,1,6,1,Vegetables A-E
 Celery,1 cup,100,20,1,0,0,1,4,1,Vegetables A-E
